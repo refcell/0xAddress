@@ -120,7 +120,7 @@ const Index = () => {
             </Main>
 
             <Footer>
-                <Text m={'auto'}>Built with ❤️</Text>
+                <Text m={'auto'}>Built with ❤️ by <a target="_blank" href="https://github.com/abigger87" rel="noopener noreferrer">Andreas Bigger</a></Text>
             </Footer>
         </Container>
     )
