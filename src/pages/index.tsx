@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Button, FormControl, FormLabel, Input, Text } from '@chakra-ui/react'
+import { Box, Button, FormControl, FormLabel, Input, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Text } from '@chakra-ui/react'
 import { CopyIcon, CheckCircleIcon } from '@chakra-ui/icons';
 import { useWeb3Context } from 'web3-react'
 import Web3 from 'web3';
@@ -10,6 +10,7 @@ import codenamize from '../lib';
 const Index = () => {
     const [error, setError] = useState('');
     const [copied, setCopied] = useState(false);
+    const [adjCount, setAdjCount] = useState(2);
 
     // * web3
     const context = useWeb3Context()
@@ -79,7 +80,7 @@ const Index = () => {
             <Main>
                 <Hero />
                 <Box m='auto !important' width="fit-content" display="flex" alignItems="center" justifyContent="center" flexDirection="column">
-                    <Box width="-webkit-fill-available" display="flex" alignItems="center" justifyContent="center">
+                    <Box my={2} width="-webkit-fill-available" display="flex" alignItems="center" justifyContent="center">
                         <form style={{width: "-webkit-fill-available"}} onSubmit={() => {}}>
                             {error && <ErrorMessage message={error} />}
                             <FormControl width="-webkit-fill-available">
@@ -94,14 +95,29 @@ const Index = () => {
                             </FormControl>
                         </form>
                     </Box>
+                    <Box my={2} width="-webkit-fill-available" display="flex" alignItems="center" justifyContent="center">
+                        <form style={{width: "-webkit-fill-available"}} onSubmit={() => {}}>
+                            {error && <ErrorMessage message={error} />}
+                            <FormControl width="-webkit-fill-available">
+                                <FormLabel>Adjective Count:</FormLabel>
+                                    <NumberInput onChange={(val) => setAdjCount(parseInt(val))} defaultValue={adjCount} min={1} max={10} >
+                                        <NumberInputField  />
+                                        <NumberInputStepper>
+                                            <NumberIncrementStepper />
+                                            <NumberDecrementStepper />
+                                        </NumberInputStepper>
+                                    </NumberInput>
+                                </FormControl>
+                        </form>
+                    </Box>
                     <Box
                         onClick={() => {
                             setCopied(true);
-                            navigator.clipboard.writeText("0x" + zeroxName(address));
+                            navigator.clipboard.writeText("0x" + zeroxName(address, adjCount));
                             setTimeout(() => setCopied(false), 400);
                         }}
                         cursor='pointer'
-                        my={4}
+                        my={6}
                         display="flex"
                         width="-webkit-fill-available"
                         alignItems="center"
@@ -110,11 +126,11 @@ const Index = () => {
                         borderWidth={1}
                         borderRadius={8}
                         boxShadow="lg">
-                            <Text>{zeroxName(address).length > 0 ? "0x" + zeroxName(address) : "Pseudonym parsed here..."}</Text>
+                            <Text>{zeroxName(address, adjCount).length > 0 ? "0x" + zeroxName(address, adjCount) : "Pseudonym parsed here..."}</Text>
                             {copied ? (<CheckCircleIcon ml='auto' />) : (<CopyIcon ml='auto' />)}
                     </Box>
                     <Box display="flex" width="-webkit-fill-available" alignItems="center" justifyContent="center">
-                        <ErrorMessage width='-webkit-fill-available' message={'Warning: This address is solely for fun and CANNOT be used to send funds! The creators of this tool are not responsible for any damages.'} />
+                        <ErrorMessage width='-webkit-fill-available' message={'Warning: This address is solely for fun and CANNOT be used to send funds! The creators of this tool are not responsible for any damages and are not liable for harmful or abusive terminology presented as names are generated from random adjective/noun collections.'} />
                     </Box>
                 </Box>
             </Main>
@@ -130,7 +146,7 @@ const isAddress = (address: string) => {
     return /^(0x)?[0-9a-f]{40}$/i.test(address)
 }
 
-const zeroxName = (address: string) => {
+const zeroxName = (address: string, adjCount: number) => {
     let name = ''
     address = String(address).toLowerCase()
 
@@ -142,7 +158,7 @@ const zeroxName = (address: string) => {
         name = codenamize(
         {
             seed: address,
-            adjectiveCount: 2,
+            adjectiveCount: adjCount > 0 && adjCount < 11 ? adjCount : 2,
             maxItemChars: 5,
             capitalize: true,
             separator: ''
