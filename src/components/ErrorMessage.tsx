@@ -1,13 +1,13 @@
 import React from 'react';
 import { Box, Alert, AlertIcon, AlertDescription } from '@chakra-ui/react';
 
-const ErrorMessage = ({ message }: { message: string }) => {
+const ErrorMessage = ({ message, width='auto' }: { message: string, width?: string }) => {
     return (
-        <Box my={4}>
-        <Alert status="error" borderRadius={4}>
-            <AlertIcon />
-            <AlertDescription>{message}</AlertDescription>
-        </Alert>
+        <Box my={4} width={width}>
+            <Alert status="error" borderRadius={4}>
+                <AlertIcon />
+                <AlertDescription>{message}</AlertDescription>
+            </Alert>
         </Box>
     );
 }

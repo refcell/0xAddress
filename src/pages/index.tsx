@@ -1,39 +1,16 @@
-import { Box, Button, FormControl, FormLabel, Input, Text } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
-import { Hero, Container, Main, DarkModeSwitch, Footer, ErrorMessage } from '../components';
-import codenamize from '../lib';
+import { Box, Button, FormControl, FormLabel, Input, Text } from '@chakra-ui/react'
+import { CopyIcon, CheckCircleIcon } from '@chakra-ui/icons';
 import { useWeb3Context } from 'web3-react'
 import Web3 from 'web3';
 
-const isAddress = (address: string) => {
-    return /^(0x)?[0-9a-f]{40}$/i.test(address)
-}
-
-const zeroxName = (address: string) => {
-    let name = ''
-    address = String(address).toLowerCase()
-
-    if (address.substring(0, 2) !== '0x') {
-        address = '0x' + address
-    }
-
-    if (isAddress(address)) {
-        name = codenamize(
-        {
-            seed: address,
-            adjectiveCount: 2,
-            maxItemChars: 5,
-            capitalize: true,
-            separator: ''
-        })
-    }
-
-    return name
-}
+import { Hero, Container, Main, DarkModeSwitch, Footer, ErrorMessage } from '../components';
+import codenamize from '../lib';
 
 const Index = () => {
     const [error, setError] = useState('');
-    
+    const [copied, setCopied] = useState(false);
+
     // * web3
     const context = useWeb3Context()
     const [address, setAddress] = useState('');
@@ -102,10 +79,10 @@ const Index = () => {
             <Main>
                 <Hero />
                 <Box m='auto !important' width="fit-content" display="flex" alignItems="center" justifyContent="center" flexDirection="column">
-                    <Box display="flex" alignItems="center" justifyContent="center">
-                        <form onSubmit={() => {}}>
+                    <Box width="-webkit-fill-available" display="flex" alignItems="center" justifyContent="center">
+                        <form style={{width: "-webkit-fill-available"}} onSubmit={() => {}}>
                             {error && <ErrorMessage message={error} />}
-                            <FormControl>
+                            <FormControl width="-webkit-fill-available">
                                 <FormLabel>Enter your wallet address:</FormLabel>
                                 <Input
                                     type="text"
@@ -117,8 +94,27 @@ const Index = () => {
                             </FormControl>
                         </form>
                     </Box>
-                    <Box my={4} display="flex" width="-webkit-fill-available" alignItems="center" justifyContent="center" p={4} borderWidth={1} borderRadius={8} boxShadow="lg">
-                        <Text>{zeroxName(address).length > 0 ? "0x" + zeroxName(address) : "Pseudonym parsed here..."}</Text>
+                    <Box
+                        onClick={() => {
+                            setCopied(true);
+                            navigator.clipboard.writeText("0x" + zeroxName(address));
+                            setTimeout(() => setCopied(false), 400);
+                        }}
+                        cursor='pointer'
+                        my={4}
+                        display="flex"
+                        width="-webkit-fill-available"
+                        alignItems="center"
+                        justifyContent="center"
+                        p={4}
+                        borderWidth={1}
+                        borderRadius={8}
+                        boxShadow="lg">
+                            <Text>{zeroxName(address).length > 0 ? "0x" + zeroxName(address) : "Pseudonym parsed here..."}</Text>
+                            {copied ? (<CheckCircleIcon ml='auto' />) : (<CopyIcon ml='auto' />)}
+                    </Box>
+                    <Box display="flex" width="-webkit-fill-available" alignItems="center" justifyContent="center">
+                        <ErrorMessage width='-webkit-fill-available' message={'Warning: This address is solely for fun and CANNOT be used to send funds! The creators of this tool are not responsible for any damages.'} />
                     </Box>
                 </Box>
             </Main>
@@ -128,6 +124,32 @@ const Index = () => {
             </Footer>
         </Container>
     )
+}
+
+const isAddress = (address: string) => {
+    return /^(0x)?[0-9a-f]{40}$/i.test(address)
+}
+
+const zeroxName = (address: string) => {
+    let name = ''
+    address = String(address).toLowerCase()
+
+    if (address.substring(0, 2) !== '0x') {
+        address = '0x' + address
+    }
+
+    if (isAddress(address)) {
+        name = codenamize(
+        {
+            seed: address,
+            adjectiveCount: 2,
+            maxItemChars: 5,
+            capitalize: true,
+            separator: ''
+        })
+    }
+
+    return name
 }
 
 export const connectWallet = async (isConnected) => {
