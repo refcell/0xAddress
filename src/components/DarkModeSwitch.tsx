@@ -6,9 +6,6 @@ const DarkModeSwitch = () => {
     const isDark = colorMode === 'dark'
     return (
         <Button
-            position="fixed"
-            top="1rem"
-            right="1rem"
             color="green"
             onClick={toggleColorMode}
         >

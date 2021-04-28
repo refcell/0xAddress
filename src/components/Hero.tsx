@@ -7,6 +7,7 @@ const Hero = ({ title }: { title: string }) => (
         height="-webkit-fill-available"
         maxHeight={200}
         minHeight={150}
+        mt={12}
         bgGradient="linear(to-l, #7928CA, #FF0080)"
         bgClip="text"
     >
